@@ -16,10 +16,10 @@ all: build
 
 # -- BUILD EXECULTABLE -- #
 build: $(OBJ)
-	mkdir -p $(BUILD)
-	$(CC) $(CFLAG) $^ -o $(BUILD)/$(NAME)
+	$(CC) $(CFLAG) $(BUILD)/$^ -o $(BUILD)/$(NAME)
 # -- COMPILE OBJECTS -- #
-main.o: src/main.c $(LIB)/bar.h
+main.o: src/main.c
+	mkdir -p $(BUILD)
 	$(CC) $(CFLAG) -c $< -o $(BUILD)/$@
 
 $(LIB)/%.o: $(LIB)/%.c
