@@ -15,6 +15,8 @@ int get_size(FILE* file) {
     return atoi(buff);
 }
 
+
+/* NOTE this function consumes a lot of memory because of all those mallocs */
  /* receives: file pointer, pointer to an empty array of characters, size of the set
   * returns: integer (1 = end of file/ error  0 = sucess)
   * HACK mutates the array from the pointer */
@@ -25,6 +27,9 @@ int get_set(FILE* file, char** data_arr, int size) {
     * if we find an EOF (end of file), return 1 (error code) */
    if (!feof(file)) {
        for (i = 0; i < size; i++) {
+        /* we allocate a 50 character long string for each array element */
+        data_arr[i] = malloc(sizeof(char) * 50);
+        /* and then get the next line of the file and put it into that empty string */
         fgets(data_arr[i], 50, file);
        }
    } else {
@@ -39,6 +44,8 @@ int main(int argc, char* argv[]) {
    char* filename;
    char** dataset;
    int size;
+   /* int i;  iterator index */
+
 
    if (argc != 2) {
         printf("Incorrect number of arguments\nCorrect use:\tshorthand [file path]\n");
@@ -54,16 +61,17 @@ int main(int argc, char* argv[]) {
    size = get_size(file);
    printf("size is: %d\n", size);
 
-   /* FIXME I know there's a segfault starting somewhere on this malloc */
-   dataset = (char **)malloc(size * sizeof(char) * 50);
+   /* we first allocate the number of pointer to our arrays.
+    * they will be create at get_set() later */
+   dataset = malloc(size * sizeof(char*));
    get_set(file, dataset, size);
 
    /* gen_graph(dataset); TODO -> needs implementation */
 
-   printf("this is the first element: %s\n", dataset[0]);
-
    fclose(file);
    /* FILE SCOPE END */
+
+   free(dataset); /* no memory leaks thank you */
 
     return 0;
 }
